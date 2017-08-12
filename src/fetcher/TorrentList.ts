@@ -3,6 +3,11 @@ import {AjaxRequest, Observable} from "@reactivex/rxjs";
 const USER:string = "corax";
 const PASS:string = "dimon1991";
 
+interface TRResponce<P> {
+    result:string;
+    arguments:P;
+}
+
 var SESSION:string = "";
 
 function getAuth():string {
@@ -40,7 +45,7 @@ function createOptions(session:string):AjaxRequest {
     }
 }
 
-function getTorrents(session:string) {
+function getTorrents(session:string):Observable<TRResponce<any>> {
     let options = createOptions(session);
     options.body = JSON.stringify({
         arguments: {
@@ -75,14 +80,14 @@ function getTorrents(session:string) {
         method: "torrent-get"
     })
 
-    return Observable.ajax(options).map((e => e.response));
+    return Observable.ajax(options).map((e => (e.response as TRResponce<any>).arguments));
 }
 
-function getStats(session:string) {
+function getStats(session:string):Observable<TRResponce<any>> {
     let options = createOptions(session);
     options.body = "{\"method\":\"session-stats\"}";
 
-    return Observable.ajax(options).map((e => e.response));
+    return Observable.ajax(options).map((e => (e.response as TRResponce<any>).arguments));;
 }
 
 
