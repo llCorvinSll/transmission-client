@@ -12,6 +12,10 @@
     ],
     "strict": true
   },
+  "typeRoots": [
+    "node_modules/@types",
+    "node_modules/react-toolbox/react-toolbox.d.ts"
+  ],
   "exclude": [
     "node_modules",
     "dist"

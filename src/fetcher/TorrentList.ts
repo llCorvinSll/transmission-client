@@ -16,7 +16,7 @@ function getAuth():string {
 
 
 export default function GetTorrentList() {
-    const timer = Observable.interval(500);
+    const timer = Observable.interval(1000);
 
 
     return getSession()

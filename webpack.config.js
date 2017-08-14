@@ -1,5 +1,4 @@
 const webpack = require("webpack");
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const path = require("path");
 const nodeEnv = process.env.NODE_ENV || "development";
 const isProd = nodeEnv === "production";
@@ -9,7 +8,7 @@ var config = {
     devtool: isProd ? "hidden-source-map" : "source-map",
     context: path.resolve("./src"),
     entry: {
-        app: ["./main.tsx",  "./main.scss"]
+        app: ["./main.tsx"]
     },
     output: {
         path: path.resolve("./dist"),
@@ -28,22 +27,30 @@ var config = {
                 use: ["ts-loader", "source-map-loader"]
             },
             {test: /\.html$/, loader: "html-loader"},
-            {test: /\.css$/, loaders: ["style-loader", "css-loader"]},
-            { // sass / scss loader for webpack
-                test: /\.(sass|scss)$/,
-                loader: ExtractTextPlugin.extract(['css-loader', 'sass-loader'])
-            }
+            {
+                test: /\.css$/,
+                //include: [path.join(__dirname, "./node_modules/react-toolbox/")],
+                use: [
+                    "style-loader",
+                    {
+                        loader: "css-loader",
+                        options: {
+                            modules: true, // default is false
+                            sourceMap: true,
+                            importLoaders: 1,
+                            localIdentName: "[name]--[local]--[hash:base64:8]"
+                        }
+                    },
+                    "postcss-loader"
+                ]
+            },
         ],
 
     },
     resolve: {
-        extensions: [".ts", ".tsx", ".js", ".scss"]
+        extensions: [".ts", ".tsx", ".js", ".css"]
     },
     plugins: [
-        new ExtractTextPlugin({ // define where to save the file
-            filename: '[name].bundle.css',
-            allChunks: true,
-        }),
         new webpack.DefinePlugin({
             "process.env": {
                 // eslint-disable-line quote-props
