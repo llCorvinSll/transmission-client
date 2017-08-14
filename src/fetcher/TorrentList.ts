@@ -8,6 +8,25 @@ interface TRResponce<P> {
     arguments:P;
 }
 
+export interface Stats {
+    uploadedBytes: number;
+    downloadedBytes: number;
+    filesAdded: number;
+    sessionCount: number;
+    secondsActive: number;
+}
+
+export interface SessionStats {
+    activeTorrentCount?: number;
+    downloadSpeed?:number;
+    pausedTorrentCount?: number;
+    torrentCount?: number;
+    uploadSpeed?: number;
+    ["cumulative-stats"]?:Stats;
+    ["current-stats"]?:Stats;
+}
+
+
 var SESSION:string = "";
 
 function getAuth():string {
@@ -83,11 +102,11 @@ function getTorrents(session:string):Observable<TRResponce<any>> {
     return Observable.ajax(options).map((e => (e.response as TRResponce<any>).arguments));
 }
 
-function getStats(session:string):Observable<TRResponce<any>> {
+function getStats(session:string):Observable<SessionStats> {
     let options = createOptions(session);
     options.body = "{\"method\":\"session-stats\"}";
 
-    return Observable.ajax(options).map((e => (e.response as TRResponce<any>).arguments));;
+    return Observable.ajax(options).map((e => (e.response as TRResponce<any>).arguments));
 }
 
 

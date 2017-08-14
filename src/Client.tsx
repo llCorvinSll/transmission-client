@@ -1,15 +1,30 @@
 import * as React from "react";
-import GetTorrentList from "./fetcher/TorrentList";
+import GetTorrentList, {SessionStats} from "./fetcher/TorrentList";
 import {AppBar} from "react-toolbox/lib/app_bar";
 import {Link} from "react-toolbox/lib/link";
 import {Navigation} from "react-toolbox/lib/navigation";
 
-export default class Client extends React.Component<{}, {}> {
+
+interface ClinetState {
+    stats: SessionStats;
+}
+
+export default class Client extends React.Component<{}, ClinetState> {
+    constructor(p:{},s:any) {
+        super(p,s);
+
+        this.state = {
+            stats: {
+                torrentCount: 0
+            }
+        }
+
+    }
 
     componentDidMount() {
 
         GetTorrentList().subscribe(([stats, torrents]) => {
-            console.log(stats)
+            this.setState({stats: stats})
         })
     }
 
@@ -20,7 +35,7 @@ export default class Client extends React.Component<{}, {}> {
         return (
             <div>
 
-                <TopBar />
+                <TopBar {...this.state.stats}/>
 
             </div>
         )
@@ -28,14 +43,14 @@ export default class Client extends React.Component<{}, {}> {
 }
 
 
-class TopBar extends React.Component<{}, {}> {
+class TopBar extends React.Component<SessionStats, {}> {
 
 
     render() {
         return (
             <AppBar title='React Toolbox' leftIcon='menu'>
                 <Navigation type='horizontal'>
-                    <Link href='http://' label='Inbox' icon='inbox' />
+                    <Link href='http://' label={`all: ${this.props.torrentCount}`} icon='inbox' />
                     <Link href='http://' active label='Profile' icon='person' />
                 </Navigation>
             </AppBar>
