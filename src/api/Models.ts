@@ -1,12 +1,4 @@
-import {AjaxRequest, Observable} from "@reactivex/rxjs";
 
-const USER: string = "corax";
-const PASS: string = "dimon1991";
-
-interface TRResponce<P> {
-    result: string;
-    arguments: P;
-}
 
 export interface Stats {
     uploadedBytes: number;
@@ -97,109 +89,7 @@ export interface Torrent {
     webseedsSendingToUs?: number;
 }
 
-
-var SESSION: string = "";
-
-function getAuth(): string {
-    return `Basic ${btoa(`${USER}:${PASS}`)}`
-}
-
-
-export default function GetTorrentList() {
-    const timer = Observable.interval(1000);
-
-
-    return getSession()
-        .flatMap((str: string) => {
-            console.log(str);
-
-            return timer.switchMap((e: number) => {
-
-
-                return Observable.zip(getStats(str), getTorrents(str));
-            });
-        })
-}
-
-
-function createOptions(session: string): AjaxRequest {
-    return {
-        url: "http://192.168.1.100:3000/transmission/rpc",
-        method: "POST",
-        crossDomain: true,
-        headers: {
-            "X-Transmission-Session-Id": session,
-            "Content-Type": "application/json-rpc",
-            "Authorization": getAuth()
-        }
-    }
-}
-
-function getTorrents(session: string): Observable<Torrent[]> {
-    let options = createOptions(session);
-    options.body = JSON.stringify({
-        arguments: {
-            fields: [
-                , "magnetLink"
-                , "id"
-                , "name"
-                , "error"
-                , "errorString"
-                , "eta"
-                , "isFinished"
-                , "isStalled"
-                , "leftUntilDone"
-                , "metadataPercentComplete"
-                , "peersConnected"
-                , "peersGettingFromUs"
-                , "peersSendingToUs"
-                , "percentDone"
-                , "queuePosition"
-                , "rateDownload"
-                , "rateUpload"
-                , "recheckProgress"
-                , "seedRatioMode"
-                , "seedRatioLimit"
-                , "sizeWhenDone"
-                , "status"
-                , "trackers"
-                , "downloadDir"
-                , "uploadedEver"
-                , "uploadRatio"
-                , "webseedsSendingToUs"]
-        },
-        method: "torrent-get"
-    })
-
-    return Observable.ajax(options).map((e => (e.response as TRResponce<{torrents: Torrent[]}>).arguments.torrents));
-}
-
-function getStats(session: string): Observable<SessionStats> {
-    let options = createOptions(session);
-    options.body = "{\"method\":\"session-stats\"}";
-
-    return Observable.ajax(options).map((e => (e.response as TRResponce<any>).arguments));
-}
-
-
-function getSession() {
-    let options = createOptions("");
-    options.body = "{\"method\":\"session-stats\"}";
-
-    return Observable.ajax(options).catch((e) => {
-        if (e.xhr.status === 409) {
-            const session = e.xhr.getResponseHeader("X-Transmission-Session-Id");
-
-            console.log(session);
-            return Observable.of(session);
-        }
-
-        throw e;
-    });
-}
-
-
-const all_torrents_fields = [, "activityDate"
+export const all_torrents_fields = [, "activityDate"
     , "addedDate"
     , "bandwidthPriority"
     , "comment"

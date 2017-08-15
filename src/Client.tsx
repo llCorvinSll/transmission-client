@@ -1,26 +1,33 @@
 import * as React from "react";
-import GetTorrentList, {SessionStats, Torrent} from "./fetcher/TorrentList";
 import {AppBar} from "react-toolbox/lib/app_bar";
 import {Link} from "react-toolbox/lib/link";
 import {Navigation} from "react-toolbox/lib/navigation";
 import {Table, TableCell, TableHead, TableRow} from "react-toolbox/lib/table";
+import {SessionStats, Torrent} from "./api/Models";
+import {getTorrent, GetTorrentList} from "./api/Api";
+import {Dialog} from "react-toolbox/lib/dialog";
 
 
 interface ClinetState {
-    stats: SessionStats;
-    torrents : Torrent[];
+    stats?: SessionStats;
+    torrents?: Torrent[];
+    dialog_open?: boolean;
+    active_torrent?: number;
+
 }
 
 export default class Client extends React.Component<{}, ClinetState> {
-    constructor(p:{},s:any) {
-        super(p,s);
+    constructor(p: {}, s: any) {
+        super(p, s);
 
         this.state = {
             stats: {
                 torrentCount: 0
             },
 
-            torrents: []
+            torrents: [],
+            dialog_open: false,
+            active_torrent: -1
         }
 
     }
@@ -59,9 +66,9 @@ export default class Client extends React.Component<{}, ClinetState> {
                             ratio
                         </TableCell>
                     </TableHead>
-                    {this.state.torrents.map((tr) => {
+                    {this.state.torrents && this.state.torrents.map((tr) => {
                         return (
-                            <TableRow key={tr.id}>
+                            <TableRow key={tr.id} onClick={() => this.handleClick(tr.id)}>
                                 <TableCell numeric={false} key="id">
                                     {tr.id}
                                 </TableCell>
@@ -83,8 +90,25 @@ export default class Client extends React.Component<{}, ClinetState> {
 
                 </Table>
 
+                <Dialog
+                    active={this.state.dialog_open}
+                    onEscKeyDown={this.handleClick}
+                    onOverlayClick={this.handleClick}
+                    title='My awesome dialog'
+                >
+                    <p>Here you can add arbitrary content. Components like Pickers are using dialogs now.</p>
+                    <TorrentDetails id={this.state.active_torrent}/>
+                </Dialog>
+
             </div>
         )
+    }
+
+     private handleClick = (id?: number) => {
+        this.setState({
+            active_torrent: id,
+            dialog_open: !this.state.dialog_open
+        })
     }
 }
 
@@ -93,17 +117,17 @@ class TopBar extends React.Component<SessionStats, {}> {
 
     render() {
         return (
-            <AppBar title='React Toolbox' leftIcon='menu'>
+            <AppBar title='Transmission' leftIcon='menu'>
                 <Navigation type='horizontal'>
-                    <Link href='http://' label={`all: ${this.props.torrentCount}`} icon='inbox' />
-                    <Link href='http://' active label='Profile' icon='person' />
+                    <Link href='http://' label={`all: ${this.props.torrentCount}`} icon='inbox'/>
+                    <Link href='http://' active label='Profile' icon='person'/>
                 </Navigation>
             </AppBar>
         )
     }
 }
 
-function bytesToSize(bytes?:number) {
+function bytesToSize(bytes?: number) {
     const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
 
     if (bytes == 0 || !bytes) {
@@ -112,3 +136,43 @@ function bytesToSize(bytes?:number) {
     var i = parseInt(`${Math.floor(Math.log(bytes) / Math.log(1024))}`);
     return Math.round(bytes / Math.pow(1024, i)) + ' ' + sizes[i];
 };
+
+
+interface TorrentDetailsProps {
+    id?: number;
+}
+
+interface TorrentDetailsState {
+    torrent?: Torrent;
+}
+
+class TorrentDetails extends React.Component<TorrentDetailsProps, TorrentDetailsState> {
+    constructor(p:TorrentDetailsProps,s:any) {
+        super(p,s);
+
+        this.state = {
+
+        }
+    }
+
+    componentDidMount() {
+        if (this.props.id) {
+
+            console.log("render details")
+            getTorrent(this.props.id).subscribe((e) => {
+                console.log(e)
+
+                this.setState({
+                    torrent:e
+                })
+
+            })
+        }
+    }
+
+    render() {
+        return (<pre>
+            {this.state && JSON.stringify(this.state.torrent, )}
+        </pre>)
+    }
+}
