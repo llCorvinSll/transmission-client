@@ -20,7 +20,7 @@ function actionCreator(type:ActionTypes, payload:any):BaseAction<any> {
 
 interface TorrentListActionCreator {
     (type:ActionTypes.FETCH_LIST_COMPLETE, payload:Torrent[]):BaseAction<Torrent[]>;
-    (type:ActionTypes.FETCH_LIST, payload:void):BaseAction<void>;
+    (type:ActionTypes.FETCH_LIST):BaseAction<void>;
 }
 
 

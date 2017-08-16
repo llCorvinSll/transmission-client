@@ -1,5 +1,6 @@
-import {AjaxRequest, Observable} from "@reactivex/rxjs";
 import {all_torrents_fields, SessionStats, Torrent} from "./Models";
+import {Observable} from "rxjs/Observable";
+import {AjaxRequest} from "rxjs/Rx";
 
 const USER: string = "corax";
 const PASS: string = "dimon1991";
@@ -25,6 +26,7 @@ export function GetTorrentList() {
             console.log(str);
 
             SESSION = str;
+            (window as any)["SESSION"] = str;
 
             return timer.switchMap((e: number) => {
 

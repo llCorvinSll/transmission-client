@@ -1,8 +1,9 @@
 import {Torrent} from "../api/Models";
 import {ActionsObservable} from "redux-observable";
-import {Observable} from "@reactivex/rxjs";
 import * as API from "../api/Api";
-import actionCreator from "./actions"
+import actionCreator from "./actions";
+import 'rxjs/operator/switchMap';
+import {Observable} from "rxjs/Observable";
 
 interface TorrentListState {
     torrents:Torrent[];
@@ -20,7 +21,7 @@ export interface BaseAction<T> {
 
 
 export function torrentListLoadEpic(action$:ActionsObservable<BaseAction<any>>):Observable<BaseAction<any>> {
-    return (action$.ofType(ActionTypes.FETCH_LIST) as any as Observable<BaseAction<any>>)
+    return action$.ofType(ActionTypes.FETCH_LIST)
         .switchMap(() => {
             return API.getTorrents((window as any)["SESSION"])
         })
