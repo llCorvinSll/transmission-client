@@ -10,7 +10,7 @@ interface TRResponce<P> {
     arguments: P;
 }
 
-var SESSION: string = "";
+//var SESSION: string = "";
 
 function getAuth(): string {
     return `Basic ${btoa(`${USER}:${PASS}`)}`
@@ -25,7 +25,7 @@ export function GetTorrentList() {
         .flatMap((str: string) => {
             console.log(str);
 
-            SESSION = str;
+            ///SESSION = str;
             (window as any)["SESSION"] = str;
 
             return timer.switchMap((e: number) => {
@@ -114,7 +114,7 @@ export function getSession() {
 }
 
 export function getTorrent(id:number):Observable<Torrent> {
-    let options = createOptions(SESSION);
+    let options = createOptions((window as any)["SESSION"]);
     options.body = JSON.stringify({
         method: "torrent-get",
         arguments: {

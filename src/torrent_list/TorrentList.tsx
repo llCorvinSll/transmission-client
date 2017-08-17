@@ -3,6 +3,9 @@ import {Torrent} from "../api/Models";
 import {Table, TableCell, TableHead, TableRow} from "react-toolbox/lib/table";
 import {bytesToSize} from "../utils/utils";
 import {connect} from "react-redux";
+import {FullState} from "../FullState";
+import createEvent from "../torrent_details/actions";
+import {TorrentDetailsActionTypes} from "../torrent_details/reducer";
 
 
 interface StateProps {
@@ -10,6 +13,7 @@ interface StateProps {
 }
 
 interface DispatchProps {
+    open_torrent(id:number):void;
 }
 
 class TorrentListBase extends React.PureComponent<StateProps & DispatchProps, {}> {
@@ -57,20 +61,22 @@ class TorrentListBase extends React.PureComponent<StateProps & DispatchProps, {}
     }
 
     private handleClick = (id?: number) => {
-        console.log("OPEN_TORRENT", id);
+        if (id) {
+            console.log("OPEN_TORRENT", id);
+            this.props.open_torrent(id);
+        }
     }
 }
 
-function mapStateToProps(state: any, ownProps?:any):StateProps {
+function mapStateToProps(state: FullState, ownProps?:any):StateProps {
     return {
-        torrents: state.torrents,
+        torrents: state.torrents.torrents,
     }
-
 }
 
 const mapDispatchToProps = (dispatch: any):DispatchProps => ({
-    onClick1: () => {
-        dispatch({ type: 'CLICK_ACTION'});
+    open_torrent: (id) => {
+        dispatch(createEvent(TorrentDetailsActionTypes.OPEN_DETAILS, id));
     }
 });
 

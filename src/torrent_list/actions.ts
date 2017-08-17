@@ -1,11 +1,11 @@
-import {ActionTypes, BaseAction} from "./reducer";
+import {TorrentListActionTypes, TorrentListAction} from "./reducer";
 import {Torrent} from "../api/Models";
 
-function actionCreator(type:ActionTypes, payload:any):BaseAction<any> {
+function actionCreator(type:TorrentListActionTypes, payload:any):TorrentListAction<any> {
     switch (type) {
-        case ActionTypes.FETCH_LIST_COMPLETE: {
+        case TorrentListActionTypes.FETCH_LIST_COMPLETE: {
             return {
-                type: ActionTypes.FETCH_LIST_COMPLETE,
+                type: TorrentListActionTypes.FETCH_LIST_COMPLETE,
                 payload:payload
             }
         }
@@ -19,8 +19,8 @@ function actionCreator(type:ActionTypes, payload:any):BaseAction<any> {
 
 
 interface TorrentListActionCreator {
-    (type:ActionTypes.FETCH_LIST_COMPLETE, payload:Torrent[]):BaseAction<Torrent[]>;
-    (type:ActionTypes.FETCH_LIST):BaseAction<void>;
+    (type:TorrentListActionTypes.FETCH_LIST_COMPLETE, payload:Torrent[]):TorrentListAction<Torrent[]>;
+    (type:TorrentListActionTypes.FETCH_LIST):TorrentListAction<void>;
 }
 
 

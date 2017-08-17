@@ -2,43 +2,42 @@ import {Torrent} from "../api/Models";
 import {ActionsObservable} from "redux-observable";
 import * as API from "../api/Api";
 import actionCreator from "./actions";
-import 'rxjs/operator/switchMap';
+import {BaseAction} from "../utils/actions";
+import 'rxjs';
 import {Observable} from "rxjs/Observable";
 
-interface TorrentListState {
+export interface TorrentListState {
     torrents:Torrent[];
 }
 
-export const enum ActionTypes {
+export const enum TorrentListActionTypes {
     FETCH_LIST = 'torrent_list/FETCH_LIST',
     FETCH_LIST_COMPLETE = 'torrent_list/FETCH_LIST_COMPLETE'
 }
 
-export interface BaseAction<T> {
-    type:ActionTypes;
-    payload:T;
+export interface TorrentListAction<T> extends BaseAction<TorrentListActionTypes, T> {
 }
 
 
-export function torrentListLoadEpic(action$:ActionsObservable<BaseAction<any>>):Observable<BaseAction<any>> {
-    return action$.ofType(ActionTypes.FETCH_LIST)
+export function torrentListLoadEpic(action$:ActionsObservable<TorrentListAction<any>>):Observable<TorrentListAction<any>> {
+    return action$.ofType(TorrentListActionTypes.FETCH_LIST)
         .switchMap(() => {
             return API.getTorrents((window as any)["SESSION"])
         })
         .map((torrents:Torrent[]) => {
-            return actionCreator(ActionTypes.FETCH_LIST_COMPLETE, torrents);
+            return actionCreator(TorrentListActionTypes.FETCH_LIST_COMPLETE, torrents);
         })
 
 }
 
-export function torrentListReducer(state:TorrentListState = { torrents: []}, action:BaseAction<any>):TorrentListState {
+export function torrentListReducer(state:TorrentListState = { torrents: []}, action:TorrentListAction<any>):TorrentListState {
 
     switch (action.type) {
-        case ActionTypes.FETCH_LIST: {
+        case TorrentListActionTypes.FETCH_LIST: {
             return state;
         }
 
-        case ActionTypes.FETCH_LIST_COMPLETE: {
+        case TorrentListActionTypes.FETCH_LIST_COMPLETE: {
             return {
                 torrents: action.payload
             };
