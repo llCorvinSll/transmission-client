@@ -9,7 +9,7 @@ function actionCreator(type:TorrentDetailsActionTypes, payload:any):TorrentDetai
 }
 
 interface TorrentDetailsActionCreator {
-    (type:TorrentDetailsActionTypes.OPEN_DETAILS, id:number):TorrentDetailsAction<Torrent>;
+    (type:TorrentDetailsActionTypes.TOGGLE_DETAILS, id:number):TorrentDetailsAction<Torrent>;
     (type:TorrentDetailsActionTypes.OPEN_DETAILS_COMPLETE, payload:Torrent):TorrentDetailsAction<Torrent>;
     (type:TorrentDetailsActionTypes.OPEN_DETAILS_CANCEL):TorrentDetailsAction<void>;
 }

@@ -43,7 +43,8 @@ getSession().flatMap((str) => {
 
 })
 
-ReactDOM.render(<Provider store={store}>
+ReactDOM.render(
+    <Provider store={store}>
     <Client/>
-</Provider>, document.getElementById('app'));
-
+    </Provider>
+    , document.getElementById('app'));

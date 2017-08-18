@@ -20,38 +20,49 @@ class TorrentListBase extends React.PureComponent<StateProps & DispatchProps, {}
     render() {
         return (<Table selectable={false}>
             <TableHead>
-                <TableCell numeric={false} key="id">
+                <TableCell key="id">
                     id
                 </TableCell>
-                <TableCell numeric={false} key="name">
+                <TableCell key="name">
                     name
                 </TableCell>
-                <TableCell numeric={false} key="dl_up">
+                <TableCell key="dl_up">
                     DL/UP
                 </TableCell>
-                <TableCell numeric={false} key="size">
+                <TableCell key="size">
                     size
                 </TableCell>
-                <TableCell numeric={false} key="ratio">
+                <TableCell key="ratio">
                     ratio
                 </TableCell>
             </TableHead>
             {this.props.torrents && this.props.torrents.map((tr) => {
+
+                let handler = this.click_handlers[tr.id];
+                if(!handler) {
+                    handler = () => {
+                        console.log("CLICK", tr.id);
+                        this.props.open_torrent(tr.id);
+                    }
+
+                    this.click_handlers[tr.id] = handler;
+                }
+
                 return (
-                    <TableRow key={tr.id} onClick={() => this.handleClick(tr.id)}>
-                        <TableCell numeric={false} key="id">
+                    <TableRow key={tr.id} onClick={handler}>
+                        <TableCell key="id">
                             {tr.id}
                         </TableCell>
-                        <TableCell numeric={false} key="name">
+                        <TableCell key="name">
                             {tr.name}
                         </TableCell>
-                        <TableCell numeric={false} key="dl_up">
+                        <TableCell key="dl_up">
                             {bytesToSize(tr.rateDownload)}/{bytesToSize(tr.rateUpload)}
                         </TableCell>
-                        <TableCell numeric={false} key="size">
+                        <TableCell key="size">
                             {bytesToSize(tr.sizeWhenDone)}
                         </TableCell>
-                        <TableCell numeric={false} key="ratio">
+                        <TableCell key="ratio">
                             {tr.uploadRatio}
                         </TableCell>
                     </TableRow>
@@ -60,12 +71,8 @@ class TorrentListBase extends React.PureComponent<StateProps & DispatchProps, {}
         </Table>);
     }
 
-    private handleClick = (id?: number) => {
-        if (id) {
-            console.log("OPEN_TORRENT", id);
-            this.props.open_torrent(id);
-        }
-    }
+
+    private click_handlers: {[key:number]: ()=> void } = {};
 }
 
 function mapStateToProps(state: FullState, ownProps?:any):StateProps {
@@ -76,7 +83,8 @@ function mapStateToProps(state: FullState, ownProps?:any):StateProps {
 
 const mapDispatchToProps = (dispatch: any):DispatchProps => ({
     open_torrent: (id) => {
-        dispatch(createEvent(TorrentDetailsActionTypes.OPEN_DETAILS, id));
+        console.log(id);
+        dispatch(createEvent(TorrentDetailsActionTypes.TOGGLE_DETAILS, id));
     }
 });
 

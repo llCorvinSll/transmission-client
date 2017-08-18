@@ -42,7 +42,7 @@ export interface Torrent {
     haveUnchecked?: number;
     haveValid?: number;
     honorsSessionLimits?: boolean;
-    id?: number;
+    id: number;
     isFinished?: boolean;
     isPrivate?: boolean;
     isStalled?: boolean;
